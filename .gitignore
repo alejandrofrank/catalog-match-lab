@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+node_modules/
+coverage/
+*.log
+*.pem
+*.key
+*.p12
+credentials*.json
+service-account*.json
+*.tfstate*
+.terraform/
+.DS_Store

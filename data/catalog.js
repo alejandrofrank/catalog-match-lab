@@ -1,0 +1,20 @@
+// Hand-authored fiction, not scraped or copied from a customer's inventory.
+export const catalog = [
+  { id: 'a-milk', merchant: 'Market A', product: 'Leche Loma entera UHT 1 L', price: 2.45 },
+  { id: 'b-milk', merchant: 'Market B', product: 'LOMA WHOLE MILK 1000 ML', price: 2.79 },
+  { id: 'c-milk', merchant: 'Market C', product: 'Leche entera Loma 1000cc', price: 2.62 },
+  { id: 'a-small', merchant: 'Market A', product: 'Leche Loma entera 200 ml', price: 0.85 },
+  { id: 'b-skim', merchant: 'Market B', product: 'Leche Loma descremada 1 L', price: 2.59 },
+  { id: 'c-six', merchant: 'Market C', product: 'Loma whole milk 6 x 1 L', price: 13.8 },
+  { id: 'a-rice', merchant: 'Market A', product: 'Arroz Norte blanco 1 kg', price: 1.4 },
+  { id: 'b-rice', merchant: 'Market B', product: 'Norte white rice 1000 g', price: 1.55 },
+  { id: 'a-flour', merchant: 'Market A', product: 'Harina Sol maiz blanca 1 kg', price: 1.1 },
+  { id: 'b-flour', merchant: 'Market B', product: 'Sol white maize flour 1000 g', price: 1.25 },
+  { id: 'a-chicken', merchant: 'Market A', product: 'Pollo entero fresco 1 kg', price: 3.2 },
+  { id: 'b-chicken', merchant: 'Market B', product: 'Whole chicken fresh 1000 g', price: 3.5 },
+  { id: 'c-broth', merchant: 'Market C', product: 'Caldo de pollo 24 g', price: 0.4 },
+  { id: 'a-coffee', merchant: 'Market A', product: 'Cafe Viento molido 250 g', price: 3.1 },
+  { id: 'b-coffee', merchant: 'Market B', product: 'Viento ground coffee 0.25 kg', price: 3.4 },
+  { id: 'c-instant', merchant: 'Market C', product: 'Cafe Viento instantaneo 250 g', price: 4.2 },
+];
+export const sampleCsv = 'sku,product\nDEMO-01,LCH LOMA ENT 1LT\nDEMO-02,ARROZ NORTE BLANCO 1KG\nDEMO-03,HAR SOL MAIZ BLANCA 1KG\nDEMO-04,POLLO ENT FRESCO 1KG\nDEMO-05,CAFE VTO MOLIDO 250G\nDEMO-06,LOMA WHOLE MILK 6 X 1L';

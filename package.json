@@ -1,0 +1,9 @@
+{
+  "name": "catalog-match-lab",
+  "version": "0.1.0",
+  "description": "A visual lab for matching messy product names without confusing sizes, variants or packs.",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "scripts": { "dev": "node scripts/serve.js", "test": "node --test", "eval": "node eval/run.js", "check:public": "node scripts/check-public.js" }
+}
