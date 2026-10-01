@@ -1,0 +1,50 @@
+# Architecture
+
+## Data flow
+
+```mermaid
+flowchart LR
+  CSV["CSV: sku + product"] --> Parse["Validate local input"]
+  Parse --> Describe["Describe identity"]
+  Fixture["Fictional catalog"] --> Rules["Compare product pairs"]
+  Describe --> Rules
+  Rules --> Yes["Same presentation"]
+  Rules --> No["Conflicting attribute"]
+  Rules --> Review["Missing evidence"]
+  Yes --> Prices["Compare fictional prices"]
+  Parse -. "Explicit user action" .-> Local["Local Node server"]
+  Local --> Jev["Jev structured decisions"]
+  Jev --> Column["Separate provider column"]
+```
+
+The UI calls the same pure matching code used by the tests. There are no precomputed match labels in the UI.
+
+## Identity before price
+
+The rules normalize known aliases and units, then check:
+
+- Product kind: chicken and broth remain separate.
+- Brand: two brands do not become the same SKU because their descriptions overlap.
+- Variant: whole milk, skimmed milk and flavored milk are distinct.
+- Size and dimension: 1 L equals 1000 ml; 250 g is not 250 ml.
+- Pack count: six 1 L cartons are not one 1 L carton.
+
+A contradiction yields `no`. Missing required evidence or unsupported descriptive tokens yield `uncertain`. Only a supported pair yields `yes`. A missing brand is permitted for the explicitly supported unbranded chicken and broth fixtures.
+
+This dictionary is intentionally limited. GTIN/EAN validation, supplier identifiers, multilingual taxonomy coverage, arbitrary pack expressions, candidate retrieval and human-reviewed overrides are natural extensions; they are not implemented here.
+
+The matcher does not look at prices. The displayed min/max range includes only accepted identities from the same synthetic snapshot. There is no currency conversion, promotion modeling or stock inference.
+
+## Optional provider path
+
+The browser sends one selected name and at most 32 candidate pairs to `POST /api/jev`. The local server obtains the API key from its environment and makes a bounded request to the fixed TypeSafe endpoint. It does not return the key, save inputs, or silently substitute a rule result if the provider fails.
+
+Untrusted product names are represented as data in a structured request. The instructions ask the model to ignore instructions within those names. This reduces ambiguity but does not prove immunity to prompt injection. Any high-impact downstream action needs independent validation.
+
+The whole fixture pool is evaluated here. A large catalog would first need a recall-oriented retrieval stage and an evaluation of the products that retrieval missed.
+
+## GCP integration boundary
+
+An application can replace `data/catalog.js` with server-provided candidates from a reviewed BigQuery query. Authorize the caller before fetching data, bind parameters, bound the partition range, and keep query/model budgets explicit.
+
+Do not put credentials in browser JavaScript. Private client catalogs require tenant isolation both in storage and in any matching cache.
