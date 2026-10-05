@@ -22,3 +22,17 @@ test('decimal sizes normalize without mixing mass and volume', () => {
   assert.equal(describe('Viento ground coffee 0,25 kg').size, 250);
   assert.equal(describe('Loma whole milk 1000cc').unit, 'ml');
 });
+
+test('inspectable evidence exposes the exact gate that changes a matching decision', () => {
+  const pack = compareNames('Loma whole milk 1 L', 'Loma whole milk 6 x 1 L');
+  assert.equal(pack.checks.find(c => c.key === 'pack').status, 'conflict');
+  const missing = compareNames('Loma whole milk 1 L', 'Loma milk 1 L');
+  assert.equal(missing.decision, 'uncertain');
+  assert.equal(missing.checks.find(c => c.key === 'variant').status, 'missing');
+  const unsupported = compareNames('Cafe Viento molido 250 g', 'Cafe Viento molido premium 250 g');
+  assert.equal(unsupported.checks.find(c => c.key === 'qualifiers').status, 'unsupported');
+  assert.deepEqual(unsupported.checks.find(c => c.key === 'qualifiers').candidate, ['premium']);
+  const unbranded = compareNames('Pollo entero 1 kg', 'Whole chicken 1000 g');
+  assert.equal(unbranded.decision, 'yes');
+  assert.equal(unbranded.checks.find(c => c.key === 'brand').status, 'optional');
+});

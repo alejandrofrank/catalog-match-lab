@@ -1,5 +1,3 @@
-![Catalog Match Lab: different names, same product?](docs/images/cover.svg)
-
 # Catalog Match Lab
 
 A visual, runnable experiment for matching messy inventory names to the **same product presentation** across merchants.
@@ -8,7 +6,7 @@ Built from problems encountered at [Bakiano](https://bakiano.com): names differ,
 
 **[Quick start](#try-it) · [How it works](docs/architecture.md) · [Evaluation](docs/evaluation.md) · [Optional Jev](#try-real-jev-decisions)**
 
-![The running lab compares three matching milk cartons and rejects a smaller carton, skimmed milk and a six-pack.](docs/images/demo.png)
+![A pair inspector compares keyword overlap with identity checks and highlights the size conflict between a 1 L carton and a 200 ml carton.](docs/images/demo-desktop.jpg)
 
 ## Try it
 
@@ -22,11 +20,13 @@ npm run dev
 
 Open **http://127.0.0.1:4311**.
 
-1. Choose a product in the fictional inventory.
-2. Compare keyword overlap with structured identity decisions.
-3. Try chicken: whole chicken matches; chicken broth does not.
-4. Edit the raw names or import a two-column CSV.
-5. Expand the reasons or export the complete result as JSON.
+1. Choose an inventory item. The default compares a 1 L milk request with a cheaper 200 ml carton.
+2. Use **Same presentation**, **Size**, **Variant**, **Pack** or **Missing / unsupported** to inspect a boundary. The controls select real fixture pairs; labels come from the matcher.
+3. Compare A's shared keywords with B's identity decision. The attribute table shows normalized values and the exact conflicting or missing checks.
+4. Try chicken's **Aliases / units** case: the words do not overlap, but whole chicken and its normalized 1 kg presentation match.
+5. Edit the inventory name and click **Match name**. Import a CSV through **Import / edit CSV**, or export the complete results as JSON.
+
+The comparable-price range includes only accepted identities. The fixture price for a rejected pair stays visible for inspection, but never enters that range. All candidate results and the optional provider are expandable below the primary evidence. The interface uses hover, keyboard-focus and short selection feedback with reduced-motion support.
 
 CSV columns: `sku,product`. There is a [sample file](data/sample.csv). The local demo allows 30 rows and 32 KB. Imports remain in browser memory unless you explicitly use the optional Jev button or download an export.
 
@@ -34,7 +34,7 @@ CSV columns: `sku,product`. There is a [sample file](data/sample.csv). The local
 
 | Piece | What it does |
 | --- | --- |
-| Visual lab | CSV import, editable names, identity attributes, decision reasons and JSON export |
+| Visual lab | Editable pair inspector, boundary controls, normalized attribute checks, CSV import and JSON export |
 | Educational keyword baseline | Shows how word overlap can accept a wrong variant |
 | Offline identity matcher | A small, explicit Spanish/English vocabulary; checks kind, brand, variant, size, and pack |
 | Jev adapter | Optional real structured decisions through a local server |
@@ -57,7 +57,7 @@ Set `JEV_API_KEY` in your terminal environment, then run `npm run dev`. Alternat
 node --env-file=.env.local scripts/serve.js
 ```
 
-Then click **Run Jev on this item**. This makes one paid provider request with one question per candidate (16 fixture candidates), sends the selected input name to Jev, and shows the provider's actual choices, model and input-token count. No calls run automatically. No monetary price is hardcoded.
+Expand **Optional live Jev comparison**, then click **Run Jev on this item**. This makes one paid provider request with one question per candidate (21 fixture candidates), sends the selected input name to Jev, and shows the provider's actual choice for the inspected pair, model and input-token count. The complete provider answers are retained in the JSON export. No calls run automatically. No monetary price is hardcoded.
 
 The server binds to loopback, rejects foreign origins and unexpected hosts, limits payloads and permits one provider request at a time, up to six per minute. It is a **local development server**, not a production inference gateway. Add authentication, durable usage limits and deployment hardening before hosting it.
 
