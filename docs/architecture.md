@@ -19,6 +19,12 @@ flowchart LR
 
 The UI calls the same pure matching code used by the tests. There are no precomputed match labels in the UI.
 
+The primary view inspects one pair at a time. A shows the qualifying words shared by the deliberately simple keyword baseline. B shows the rule decision and its effect on the comparable-price range. `compareNames` returns a `checks` array alongside its decision: normalized values, contradictions, required missing attributes, optional attributes and unsupported words. The decision is derived from those same checks, so the evidence table does not reimplement the matcher.
+
+Known contradictions take precedence over missing evidence. Missing or invalid required attributes and unsupported words abstain. Pack count defaults to one when no supported pack expression is present; this is visible in the interface. The rules never use price to resolve identity.
+
+Boundary controls select existing candidates by their computed checks, rather than injecting a canned verdict. Editing an inventory name recalculates its full candidate set after an explicit submit. CSV validation is reused, and applying an edit invalidates provider results. A response from a provider request started before an edit is discarded.
+
 ## Identity before price
 
 The rules normalize known aliases and units, then check:
