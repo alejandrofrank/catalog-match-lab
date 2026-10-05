@@ -37,14 +37,23 @@ export function describe(name) {
 }
 export function compareNames(request, candidate) {
   const a = describe(request), b = describe(candidate);
-  const conflicts = ['kind', 'brand', 'variant', 'size', 'unit', 'pack'].filter(k => a[k] != null && b[k] != null && a[k] !== b[k]);
-  if (conflicts.length) return { decision: 'no', reason: 'Different ' + conflicts.join(', '), request: a, candidate: b };
   const mandatory = a.kind === 'chicken' || a.kind === 'broth' ? ['kind', 'variant', 'size', 'unit'] : ['kind', 'brand', 'variant', 'size', 'unit'];
-  const missing = mandatory.filter(k => a[k] == null || b[k] == null);
-  if (missing.length || a.unknown.length || b.unknown.length || a.size <= 0 || b.size <= 0 || a.pack < 1 || b.pack < 1) {
-    return { decision: 'uncertain', reason: 'Needs review: incomplete or unsupported attributes', request: a, candidate: b };
+  const checks = ['kind', 'brand', 'variant', 'size', 'unit', 'pack'].map(key => {
+    let status;
+    if (a[key] != null && b[key] != null && a[key] !== b[key]) status = 'conflict';
+    else if ((key === 'size' && (a.size <= 0 || b.size <= 0) && a.size != null && b.size != null) || (key === 'pack' && (a.pack < 1 || b.pack < 1))) status = 'invalid';
+    else if (a[key] == null || b[key] == null) status = mandatory.includes(key) ? 'missing' : 'optional';
+    else status = 'same';
+    return { key, request: a[key], candidate: b[key], status };
+  });
+  checks.push({ key: 'qualifiers', request: a.unknown, candidate: b.unknown, status: a.unknown.length || b.unknown.length ? 'unsupported' : 'same' });
+  const evidence = { request: a, candidate: b, checks };
+  const conflicts = checks.filter(check => check.status === 'conflict').map(check => check.key);
+  if (conflicts.length) return { decision: 'no', reason: 'Different ' + conflicts.join(', '), ...evidence };
+  if (checks.some(check => ['missing', 'invalid', 'unsupported'].includes(check.status))) {
+    return { decision: 'uncertain', reason: 'Needs review: incomplete or unsupported attributes', ...evidence };
   }
-  return { decision: 'yes', reason: 'Same kind, brand where applicable, variant, size and pack', request: a, candidate: b };
+  return { decision: 'yes', reason: 'Same kind, brand where applicable, variant, size and pack', ...evidence };
 }
 // Deliberately simple reference baseline, not Bakiano's former production engine.
 export function keywordBaseline(request, candidate) {

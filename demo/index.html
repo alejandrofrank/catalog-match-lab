@@ -1,18 +1,35 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Catalog Match Lab · Bakiano</title><meta name="description" content="A hands-on lab for matching messy product names across catalogs."><link rel="icon" href="/docs/images/icon.svg" type="image/svg+xml"><link rel="stylesheet" href="/demo/style.css"><link rel="stylesheet" href="/demo/catalog.css"><script type="module" src="/demo/app.js"></script></head>
-<body><div class="wrap">
-<nav><a class="brand" href="https://bakiano.com">Bakiano<span> / labs</span></a><div class="row"><span class="pill">Synthetic data · local processing</span><a href="https://github.com/alejandrofrank/catalog-match-lab">GitHub ↗</a></div></nav>
-<header class="hero"><div><div class="eyebrow">01 / Catalog Match Lab</div><h1>Different names.<br><em>Same product?</em></h1><p>Turn messy inventory names into comparable products.<br>Keep the brand, the variant, and the pack intact.</p></div><img class="hero-mark" src="/docs/images/icon.svg" alt="" width="155" height="130"></header>
-<div class="flow" aria-label="Matching workflow"><b>01 &nbsp; Import names</b><span class="arrow">→</span><b>02 &nbsp; Check identity</b><span class="arrow">→</span><b>03 &nbsp; Inspect decisions</b><span class="arrow">→</span><b>04 &nbsp; Compare prices</b><span class="muted"> &nbsp; / &nbsp; No account or API key required</span></div>
-<main class="lab">
-<aside class="panel">
-<div class="panel-head"><div class="eyebrow">Your inventory</div><h2>Start with a messy CSV.</h2><p class="note">Try our fictional inventory or load your own. Nothing is uploaded by the offline matcher.</p><label class="upload" for="csv-file"><span>↥ &nbsp; Choose a CSV</span><small>sku,product · 30 rows · 32 KB</small></label><input id="csv-file" class="sr-only" type="file" accept=".csv,text/csv"><p id="file-name" class="note">Example inventory loaded</p></div>
-<div class="panel-body"><div id="inventory" class="inventory"></div><details><summary>Edit raw names</summary><label class="sr-only" for="csv">Inventory CSV</label><textarea id="csv" spellcheck="false"></textarea><div class="actions"><button id="apply">Apply CSV</button><button id="reset">Reset example</button></div></details><p id="error" class="notice" role="alert"></p></div>
-</aside>
-<section class="results" aria-label="Comparison results">
-<div class="row"><div><div class="eyebrow">Selected product</div><h2 id="selected"></h2></div><button id="export">↓ Export results</button></div>
-<div class="stat-row"><div class="stat"><strong id="matched">—</strong><span>same presentation</span></div><div class="stat"><strong id="merchants">—</strong><span>merchants matched</span></div><div class="stat"><strong id="range">—</strong><span>synthetic price range · USD</span></div></div>
-<div class="panel"><div class="panel-head"><div class="row"><div><h3>Look past the name.</h3><p class="note">Keyword overlap vs. identity checks, on the same candidates.</p></div><label class="note"><input id="show-all" type="checkbox"> All candidates</label></div><div id="attributes" class="attributes"></div></div><div class="table-scroll"><table><thead><tr><th>Candidate / merchant</th><th>USD / pack</th><th>Keyword overlap</th><th>Identity rules</th><th>Jev</th></tr></thead><tbody id="candidates"></tbody></table></div><div class="panel-body"><details><summary>Why these decisions?</summary><div id="explanations"></div></details></div></div>
-<div class="panel provider"><div class="row"><div><h3>Add a real Jev comparison.</h3><p class="note">Optional. Sends this product name and the fictional candidate names to Jev. Your key stays on the local server.</p></div><button id="jev">Run Jev on this item</button></div><p id="jev-status" class="note" aria-live="polite">Offline rules are running. No model calls have been made.</p></div>
-<p class="note">This is a deliberately small matching vocabulary, not a universal product resolver. Missing evidence stays “Review”. The keyword baseline is educational; it is not Bakiano's former search engine.</p>
-</section></main><footer class="foot"><span>A working experiment from Bakiano · MIT licensed</span><span>Fictional brands, merchants and prices. No production data.</span></footer></div></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Catalog Match Lab · Bakiano</title><meta name="description" content="Compare product names and inspect the attributes behind each matching decision.">
+  <link rel="icon" href="/docs/images/icon.svg" type="image/svg+xml"><link rel="stylesheet" href="/demo/catalog.css"><script type="module" src="/demo/app.js"></script>
+</head>
+<body>
+  <header class="app-header"><div><h1>Catalog Match Lab</h1><p>Change a name. Inspect the identity checks. Compare only matching presentations.</p></div><nav aria-label="Lab links"><span class="local-state">Synthetic fixtures · offline</span><a href="https://github.com/alejandrofrank/catalog-match-lab">Source ↗</a></nav></header>
+  <main class="workspace">
+    <aside class="inventory-panel" aria-label="Inventory">
+      <h2>Inventory</h2><p class="small-note">Choose an item to investigate.</p><div id="inventory" class="inventory"></div>
+      <details class="import-panel"><summary>Import / edit CSV</summary><p class="small-note">Local browser memory. Up to 30 rows, 32 KB. Columns: <code>sku,product</code>.</p><label class="upload" for="csv-file">Choose a CSV <span>↥</span></label><input id="csv-file" class="sr-only" type="file" accept=".csv,text/csv"><p id="file-name" class="small-note">Example inventory loaded</p><label for="csv">Inventory CSV</label><textarea id="csv" spellcheck="false"></textarea><div class="actions"><button id="apply" type="button">Apply CSV</button><button id="reset" type="button">Reset example</button></div></details>
+    </aside>
+    <section class="work-area" aria-label="Matching workbench">
+      <div class="work-toolbar"><label class="compact-inventory" for="inventory-select">Inventory item <select id="inventory-select"></select></label><span id="selected-sku"></span><button id="export" type="button">Export results ↓</button></div>
+      <section class="question-panel" aria-labelledby="question"><div class="question-heading"><span class="section-label">Question</span><span class="small-note">Names are data, not product IDs</span></div><h2 id="question">Do these names identify the same product presentation?</h2>
+        <form id="name-form"><label for="input-name">Your inventory name</label><div class="name-editor"><input id="input-name" type="text" maxlength="240" required autocomplete="off" spellcheck="false"><button type="submit">Match name →</button></div><p class="small-note">Edit the name and apply it to recalculate. No model call is made.</p></form>
+      </section>
+      <p id="error" class="notice" role="alert"></p>
+      <section class="candidate-picker" aria-label="Choose a catalog listing"><div class="candidate-select-row"><label for="candidate-select">Compare with <select id="candidate-select"></select></label><span id="candidate-price" class="small-note"></span></div><div id="quick-cases" role="group" aria-label="Try a matching boundary"></div></section>
+      <section class="decision-pair" aria-label="Two matching approaches">
+        <article class="method-card"><div class="method-heading"><span class="method-letter">A</span><h3>Keyword overlap</h3></div><div id="baseline-decision" class="method-decision"></div><p id="baseline-reason"></p><div id="overlap-tokens" class="tokens"></div></article>
+        <article class="method-card"><div class="method-heading"><span class="method-letter">B</span><h3>Identity checks</h3></div><div id="identity-decision" class="method-decision"></div><p id="identity-reason"></p><p id="identity-consequence" class="consequence"></p></article>
+      </section>
+      <section class="evidence-panel" aria-labelledby="evidence-title"><div class="section-heading"><h3 id="evidence-title">What changes the decision?</h3><span id="pair-state" class="small-note" role="status"></span></div><div class="table-scroll"><table class="evidence-table"><thead><tr><th scope="col">Identity attribute</th><th scope="col">Your name</th><th scope="col">Catalog listing</th><th scope="col">Check</th></tr></thead><tbody id="attribute-checks"></tbody></table></div><p class="evidence-note small-note">Units normalize to ml or g. A missing supported pack expression defaults to one unit. Unknown words require review.</p></section>
+      <section class="price-panel" aria-labelledby="prices-title"><div class="section-heading"><h3 id="prices-title">Comparable prices</h3><span class="small-note">Synthetic USD per matching pack</span></div><div class="price-summary"><strong id="range"></strong><span id="coverage"></span></div><div id="matched-listings" class="matched-listings"></div><p class="small-note">Identity is decided before price. Different sizes, variants and packs do not enter this range.</p></section>
+      <details class="all-results"><summary id="all-results-title">Inspect all candidate results</summary><label class="small-note"><input id="show-all" type="checkbox"> Include other product kinds</label><div class="table-scroll"><table><thead><tr><th>Candidate / merchant</th><th>Fixture price</th><th>Keyword</th><th>Rules</th><th>Inspect</th></tr></thead><tbody id="candidates"></tbody></table></div></details>
+      <details class="provider"><summary>Optional live Jev comparison</summary><p class="small-note">Explicitly sends this inventory name and the fictional candidate names to Jev. Your key stays on the local server. Rules are not presented as model results.</p><button id="jev" type="button" disabled>Run Jev on this item</button><p id="jev-status" class="small-note" role="status"></p><div id="jev-pair"></div></details>
+      <p class="scope-note">Small Spanish/English dictionary, not a universal resolver. Unknown attributes stay in Review. The keyword baseline is educational, not Bakiano’s production search.</p>
+    </section>
+  </main>
+  <footer>Fictional names, stores and prices. No production data. <a href="https://bakiano.com">Bakiano ↗</a></footer>
+</body>
+</html>
