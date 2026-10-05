@@ -17,11 +17,11 @@ export const experiments = [
     id: 'egg-protein', title: 'Egg ≠ egg protein', topic: 'Identity / ingredient',
     question: 'Does mentioning egg make a product an egg?',
     explanation: 'A person reads “proteína de huevo” as a supplement. The system needs the identity and ingredient in separate fields to exclude it from an egg search.',
-    term: 'huevo', filter: { product_type: 'eggs', subtype: 'egg' },
+    term: 'huevo', filter: { product_type: 'eggs', subtype: 'chicken_egg' },
     focus: ['product_type', 'subtype', 'base_ingredient'],
     lesson: 'The supplement is protein_powder. Huevo describes its ingredient, not its product identity.',
     products: [
-      listing('eggs', 'HUEVOS BLANCOS X12', attributes('eggs', 'egg', { unit: 'unit', pack_count: 12, state: 'fresh' })),
+      listing('eggs', 'HUEVOS BLANCOS X12', attributes('eggs', 'chicken_egg', { unit: 'unit', pack_count: 12, state: 'fresh' })),
       listing('egg-protein', 'PROTEINA DE HUEVO 250 G', attributes('other', 'protein_powder', { weight_grams: 250, state: 'powdered', base_ingredient: 'huevo' })),
     ],
   },
@@ -34,7 +34,7 @@ export const experiments = [
     lesson: 'Pollo as a flavor does not turn soup_mix or dog_food into whole_chicken.',
     products: [
       listing('chicken', 'POLLO ENTERO FRESCO 1 KG', attributes('poultry', 'whole_chicken', { weight_grams: 1000, state: 'fresh' })),
-      listing('soup', 'SOPA INSTANTANEA SABOR A POLLO 70 G', attributes('condiment', 'soup_mix', { weight_grams: 70, state: 'powdered', variant: 'pollo' })),
+      listing('soup', 'SOPA INSTANTANEA SABOR A POLLO 70 G', attributes('grain', 'soup_mix', { weight_grams: 70, state: 'powdered', variant: 'pollo' })),
       listing('pet', 'ALIMENTO PARA PERROS SABOR POLLO 2 KG', attributes('pet', 'dog_food', { weight_grams: 2000, variant: 'pollo' })),
     ],
   },
