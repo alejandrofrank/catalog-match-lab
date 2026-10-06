@@ -8,6 +8,8 @@ Built from problems encountered at [Bakiano](https://bakiano.com): names differ,
 
 ![A pair inspector compares keyword overlap with identity checks and highlights the size conflict between a 1 L carton and a 200 ml carton.](docs/images/demo-desktop.jpg)
 
+Use **Colors** in the header to try Graphite / amber, Slate / cyan or Ink / lilac. The selection is saved locally and does not recalculate matches. Outcome colors retain their meaning. [Palette controls](docs/palettes.md).
+
 ## Try it
 
 Node.js 22 or newer. No dependency installation, account, or API key is required.
