@@ -1,6 +1,22 @@
 # Architecture
 
-## Data flow
+## Default enrichment view
+
+The default route consumes supplied raw/attribute records. It does not run the dictionary or a model to generate the after column.
+
+```mermaid
+flowchart LR
+  Raw["Original titles"] --> Literal["Example title filter"]
+  Saved["Supplied enrichment attributes"] --> Structured["Structured family filter"]
+  Saved --> Guard["Conservative presentation checks"]
+  Literal --> Before["Before result set"]
+  Structured --> After["After result set"]
+  Guard --> Verdict["Same / Different / Review"]
+```
+
+The bundled examples are explicitly illustrative, not captured model responses. Record values, displayed predicates and result sets share the same data. src/enriched.js consumes attributes without parsing raw names. The view demonstrates how a separate classification stage can supply the fields that downstream code needs; [field meanings and limits](enrichment.md) explain the boundary.
+
+## Rules sandbox at /rules
 
 ```mermaid
 flowchart LR
@@ -19,7 +35,7 @@ flowchart LR
 
 The UI calls the same pure matching code used by the tests. There are no precomputed match labels in the UI.
 
-The primary view inspects one pair at a time. A shows the qualifying words shared by the deliberately simple keyword baseline. B shows the rule decision and its effect on the comparable-price range. `compareNames` returns a `checks` array alongside its decision: normalized values, contradictions, required missing attributes, optional attributes and unsupported words. The decision is derived from those same checks, so the evidence table does not reimplement the matcher.
+Within /rules, the pair inspector shows the qualifying words shared by the deliberately simple keyword baseline beside the rule decision and its effect on the comparable-price range. `compareNames` returns a `checks` array alongside its decision: normalized values, contradictions, required missing attributes, optional attributes and unsupported words. The decision is derived from those same checks, so the evidence table does not reimplement the matcher.
 
 Known contradictions take precedence over missing evidence. Missing or invalid required attributes and unsupported words abstain. Pack count defaults to one when no supported pack expression is present; this is visible in the interface. The rules never use price to resolve identity.
 

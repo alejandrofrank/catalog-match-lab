@@ -37,8 +37,8 @@ const server = createServer(async (req, res) => {
       finally { busy = false; }
     }
     if (req.method !== 'GET' && req.method !== 'HEAD') return json(res, 405, { error: 'Method not allowed' });
-    const relative = path === '/' ? 'demo/index.html' : decodeURIComponent(path).slice(1);
-    const allow = /^(demo\/[a-z-]+\.(html|css|js)|docs\/images\/[a-z-]+\.(svg|png|jpg)|src\/(index|cache|match|csv)\.js|data\/(catalog\.js|sample\.csv)|examples\/scenarios\.js)$/;
+    const relative = path === '/' ? 'demo/enrichment.html' : path === '/rules' ? 'demo/index.html' : decodeURIComponent(path).slice(1);
+    const allow = /^(demo\/[a-z-]+\.(html|css|js)|docs\/images\/[a-z-]+\.(svg|png|jpg)|src\/(index|cache|match|csv|enriched)\.js|data\/(catalog\.js|enrichment-examples\.js|sample\.csv)|examples\/scenarios\.js)$/;
     if (!allow.test(relative)) return json(res, 404, { error: 'Not found' });
     const file = resolve(root, relative);
     if (!file.startsWith(root.endsWith(sep) ? root : root + sep)) return json(res, 404, { error: 'Not found' });

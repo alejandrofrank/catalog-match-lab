@@ -13,6 +13,10 @@ test('local server serves the demo but not credentials, Git metadata or cross-or
     clearTimeout(timer);
     const base = 'http://127.0.0.1:' + port;
     assert.equal((await fetch(base)).status, 200);
+    assert.match(await (await fetch(base)).text(), /Before and after enrichment/);
+    assert.match(await (await fetch(base + '/rules')).text(), /Keyword overlap/);
+    assert.equal((await fetch(base + '/src/enriched.js')).status, 200);
+    assert.equal((await fetch(base + '/data/enrichment-examples.js')).status, 200);
     for (const path of ['/.env', '/.env.local', '/.git/config', '/package.json', '/src/jev.js', '/data/private.csv']) assert.equal((await fetch(base + path)).status, 404);
     const foreignHostStatus = await new Promise((resolve, reject) => {
       const req = get(base, { headers: { Host: 'foreign.example' } }, res => { res.resume(); resolve(res.statusCode); });
