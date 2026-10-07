@@ -10,6 +10,8 @@ Built from problems encountered at [Bakiano](https://bakiano.com): names differ,
 
 Use **Colors** in the header to try Slate / blue, Graphite / grey or Midnight / blue. The selection is saved locally and does not recalculate matches. Outcome colors retain their meaning. [Palette controls](docs/palettes.md).
 
+The current [local enrichment UI preview](docs/enrichment-preview.md) has separate desktop, container-comparison and phone screenshots. It is labeled separately from this repository's runnable public demo.
+
 ## Try it
 
 Node.js 22 or newer. No dependency installation, account, or API key is required.
